@@ -9,12 +9,12 @@ This script aims to update private key on remote pi by deploying key on them.
 - cc
 
 
-## A - Deploy a SSH key with Ansible
+## A - Deploy an SSH key with Ansible
 
  	- authorized_key: user=root key="ssh-rsa AAAA....= pi@ansibleremotehost"
 
 
-## B - Deploy a SSH key but it is the only one for the remote
+## B - Deploy an SSH key but it is the only one for the remote
 
     - authorized_key:
       user: "pi"
