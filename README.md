@@ -1,7 +1,7 @@
 # ansible-raspberry-sshupdate
 Create new SSH key and update on remote pi
 
-This script aims to update private key on remote pi by deploying key on them.
+This script aims to update public key on remote pi by deploying key on them.
 
 
 [Pre requisites]
