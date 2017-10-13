@@ -35,8 +35,11 @@ This script aims to update private key on remote pi by deploying key on them.
 Legend
 
 **ssh_authorized_keys** : loop variable
+
 **user and key** : tab variables.
+
 **exclusive** : Optional value set at default state
+
 **state** : Optional value set at default state
 
 We have a file which contains our list of Hosts group_vars/linux_hosts.yml and we will add good key value.
@@ -46,7 +49,7 @@ We have a file which contains our list of Hosts group_vars/linux_hosts.yml and w
 ## 0 - Remove an SSH key
 
     - authorized_key:
-      user: "root"
+      user: "pi"
       key: "ssh-rsa AAAA....= pi@ansibleremotehost"
       state: absent
 
