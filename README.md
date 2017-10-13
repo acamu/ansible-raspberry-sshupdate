@@ -20,3 +20,17 @@ This script aims to update private key on remote pi by deploying key on them.
       user: "pi"
       key: "ssh-rsa AAAA....= pi@ansibleremotehost"
       exclusive: yes
+      
+## C - Deploy dynamicaly key on remote hosts
+
+
+    - authorized_key:
+      user: "{{ item.user }}"
+      key: "{{ item.key }}"
+      exclusive: "{{ item.exclusive | default('no') }}"
+      state: "{{ item.state | default('present') }}"
+      with_items: "{{ ssh_authorized_keys }}"
+      
+      
+      
+ss
