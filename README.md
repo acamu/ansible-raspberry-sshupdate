@@ -44,8 +44,14 @@ Legend
 
 We have a file which contains our list of Hosts group_vars/linux_hosts.yml and we will add good key value.
 
+configure a linux_hosts in our ansible inventory, we will edit the group_vars/linux_hosts.yml file to add SSH keys:
 
-
+    ssh_authorized_keys:
+     - user: root
+        key: "ssh-rsa AAAAB...aB= ansible@bastion"
+      - user: cafecreme
+        key: "ssh-rsa AAAAA...qpX= cafecreme@restau"
+    
 ## 0 - Remove an SSH key
 
     - authorized_key:
