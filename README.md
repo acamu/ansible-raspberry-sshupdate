@@ -48,9 +48,9 @@ configure a linux_hosts in our ansible inventory, we will edit the group_vars/li
 
     ssh_authorized_keys:
      - user: root
-        key: "ssh-rsa AAAAB...aB= ansible@bastion"
-      - user: cafecreme
-        key: "ssh-rsa AAAAA...qpX= cafecreme@restau"
+        key: "ssh-rsa AAAAB...aB= pi@ansibleremotehost"
+      - user: sudoroot
+        key: "ssh-rsa AAAAA...qpX= pi@ansibleremotehost1"
     
 ## 0 - Remove an SSH key
 
