@@ -4,6 +4,11 @@ Create new SSH key and update on remote pi
 This script aims to update public key on remote pi by deploying key on them.
 
 
+execute :
+    ansible-playbook playbook-ssh.yml -i hosts
+
+
+
 [Pre requisites]
 - ssh :)
 - cc
