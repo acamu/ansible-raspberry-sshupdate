@@ -6,10 +6,10 @@
     - debug: msg="Master host"
 
     - name: Set file path here
-      set_fact: remote_key_master_path="/home/acam/Public/git/raspberry-ansible-new/keys-master"
+      set_fact: remote_key_master_path="{{ remote_directory }}/keys-master"
 
     - name: Set file path here
-      set_fact: remote_key_remote_path="/home/acam/Public/git/raspberry-ansible-new/keys-remote"
+      set_fact: remote_key_remote_path="{{ remote_directory }}/keys-remote"
 
     - debug: 
         msg: "The ansible host is {{ ansible_host }}"
