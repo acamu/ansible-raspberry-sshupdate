@@ -1,0 +1,105 @@
+---
+- hosts: pi_master_host
+  gather_facts: no
+
+  tasks:
+    - debug: msg="Master host"
+
+    - name: Set file path here
+      set_fact: remote_key_master_path="/home/acam/Public/git/raspberry-ansible-new/keys-master"
+
+    - name: Set file path here
+      set_fact: remote_key_remote_path="/home/acam/Public/git/raspberry-ansible-new/keys-remote"
+
+    - debug: 
+        msg: "The ansible host is {{ ansible_host }}"
+
+    - find: 
+        path: "{{ remote_key_remote_path }}" 
+        patterns: "*"
+      register: files_to_remove
+
+    - debug: msg="{{ item }}"
+      with_items: "{{ files_to_remove.files }}"
+
+    - name: remove dir contents 
+      file: state=absent path={{ item.path }}
+      with_items: 
+        - "{{ files_to_remove.files }}"
+
+#  - name: create ansible_ssh_user locally
+#    user: name=ansible_ssh_user generate_ssh_key=yes ssh_key_bits=2048 ssh_key_file=.ssh/id_rsa
+
+#  - name: copy the generated public key to an accessible location for the next play
+#    shell: cp ~ansible_ssh_user/.ssh/id_rsa.pub /tmp/ansible_ssh_user.pub
+
+
+    - name: Generate key pair
+      shell: "ssh-keygen -b 2048 -t rsa -f {{ remote_key_remote_path }}/id_rsa -q -N /dev/null"
+      args:
+        creates: "{{ remote_key_remote_path }}/id_rsa"
+
+    - name: Test public key
+      shell: "ssh-keygen -l -f {{ remote_key_remote_path }}/id_rsa.pub"
+      changed_when: false
+
+    - name: Retrieve public key
+      shell: "cat {{ remote_key_remote_path }}/id_rsa.pub"
+      register: master_public_key
+      changed_when: false
+
+    - debug: 
+        msg: "The ansible host key is {{ ansible_host }} and user {{ ansible_user }}"
+
+    - debug: 
+        msg: "The ansible SSH key is {{ master_public_key.stdout }}"
+
+- hosts: pi_remote_hosts
+  gather_facts: no
+
+  tasks:
+    - debug: msg="Remote hosts"
+
+    - debug: 
+        msg: "The ansible host key is {{ ansible_host }} and user {{ ansible_user }}"
+
+    - debug: 
+        msg: "The ansible SSH key is {{ hostvars['master'].master_public_key.stdout }}"
+
+    - name: Deploy public key on current host {{ ansible_host }} for user {{ ansible_user }}
+      authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ hostvars['master'].master_public_key.stdout }}"
+        exclusive: "yes"
+        state: "present"
+      notify:
+       - restart ssh
+#    - service:
+#      name: sshd
+#      state: restarted
+
+  handlers:
+    - name: restart ssh
+      service: name=ssh state=restarted
+      sudo: yes
+
+
+- hosts: pi_master_host
+  gather_facts: no
+
+  tasks:
+    - debug: 
+        msg: "End tasks"
+
+    - name: Copy ssh file to remote dir
+      copy: src={{ remote_key_remote_path }}/{{item}}  dest={{ remote_key_master_path }}/ remote_src=no directory_mode=yes
+      with_items:
+      - "id_rsa"
+      - "id_rsa.pub"
+
+    - name: Make my directory tree readable (600 or 400)
+      file:
+        path: dir
+        mode: u=rw
+        recurse: yes
+

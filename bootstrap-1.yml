@@ -1,0 +1,57 @@
+- hosts: all
+
+  vars:
+      ansible_user: "acam"
+      ansible_ssh_private_key_file: "keys/id_rsa"
+      dbs_ssh_pubkey: "{{ lookup('file', 'keys/id_rsa.pub') }}"
+
+  tasks:
+    - name: Test connection
+      ping:
+      remote_user: acam
+
+    - name: Set remote path here
+      set_fact: remote_path=/home/acam/Public/test
+
+    - name: Set file path here
+      set_fact: remote_file_path="{{ remote_path }}/myfile.log"
+
+    - name: Set file path variable
+      stat: path="{{ remote_file_path }}"
+      register: file_path
+
+    - debug: msg="File exists"
+      when: file_path.stat.exists == true
+
+    - debug: msg="File not exists"
+      when: file_path.stat.exists == false
+
+    - name: Creates directory
+      file: path="{{ remote_path }}" state=directory
+
+    - name: Ensure file exists
+      copy:
+        content: ""
+        dest: "{{ remote_file_path }}"
+        force: no
+        group: acam
+        owner: acam
+        mode: 0777
+
+    - name: Set file path variable
+      stat: path="{{ remote_file_path }}"
+      register: file_path
+
+    - debug: msg="File exists"
+      when: file_path.stat.exists == true
+
+    - debug: msg="File not exists"
+      when: file_path.stat.exists == false
+
+    - name : Write file content in file_content variable.
+      set_fact: file_content="Write your file content here"
+ 
+    - name : If file exist then copy content in remote file.
+      copy: content="{{ file_content }}" dest="{{ remote_file_path }}"
+      when: file_path.stat.exists == true
+
