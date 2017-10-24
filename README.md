@@ -38,27 +38,44 @@ Save the current key uploaded successfully
 
 ## Explanation
 
+## 0 - Generate key
 
+    - name: Generate key pair
+          shell: "ssh-keygen -b 2048 -t rsa -f {{ remote_key_remote_path }}/id_rsa -q -N /dev/null"
+          args:
+            creates: "{{ remote_key_remote_path }}/id_rsa"
+        
 ##  A - Deploy an SSH key with Ansible
 
- 	- authorized_key: user=root key="ssh-rsa AAAA....= pi@ansibleremotehost"
+ 	- name: Deploy public key on current host {{ ansible_host }} for user {{ ansible_user }}
+      authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ hostvars['master'].master_public_key.stdout }}"
+        exclusive: "no"
+        state: "present"
 
 
 ## B - Deploy an SSH key but it is the only one for the remote (exclusive: yes)
 
-    - authorized_key:
-      user: "pi"
-      key: "ssh-rsa AAAA....= pi@ansibleremotehost"
-      exclusive: yes
+    - name: Deploy public key on current host {{ ansible_host }} for user {{ ansible_user }}
+      authorized_key:
+        user: "{{ ansible_user }}"
+        key: "{{ hostvars['master'].master_public_key.stdout }}"
+        exclusive: "yes"
+        state: "present"
       
       
 ## C - Remove an SSH key (not existing in this program)
 
     - authorized_key:
-      user: "pi"
-      key: "ssh-rsa AAAA....= pi@ansibleremotehost"
+      user: "{{ ansible_user }}"
+      key:  "{{ hostvars['master'].master_public_key.stdout }}"
       state: absent
 
-
-
+## D - Backup key on the Master
+    - name: Copy ssh file to remote dir
+      copy: src={{ remote_key_remote_path }}/{{item}}  dest={{ remote_key_master_path }}/ remote_src=no directory_mode=yes
+      with_items:
+      - "id_rsa"
+      - "id_rsa.pub"
 
