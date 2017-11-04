@@ -1,6 +1,7 @@
 ---
-<<<<<<< HEAD
 remote_directory: '/home/acam/Public/git/ansible-raspberry-sshupdate'
-=======
-remote_directory: '/home/acam/Public/git/ansible-raspberry-sshupdate/'
->>>>>>> 7a00d96e515279a7482a27f39a93c9b86f4fd0da
+
+foo:
+  pi1: one
+  pi2: two
+
